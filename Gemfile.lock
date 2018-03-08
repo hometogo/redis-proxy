@@ -1,0 +1,22 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    digest-crc (0.4.1)
+    et-orbi (1.0.9)
+      tzinfo
+    rufus-scheduler (3.4.2)
+      et-orbi (~> 1.0)
+    thread_safe (0.3.6)
+    tzinfo (1.2.4)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  java
+  ruby
+
+DEPENDENCIES
+  digest-crc (~> 0.4.0)
+  rufus-scheduler (~> 3.4.0)
+
+BUNDLED WITH
+   1.16.1
