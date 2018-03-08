@@ -1,5 +1,7 @@
 require "digest/crc16"
 
+require_relative "command"
+
 module Proxy
 
   class Cluster < Pool
@@ -70,7 +72,7 @@ module Proxy
       index = @upstream.select { |u| u.master? }
       return if index.empty?
 
-      map = index.sample.read_slot_map
+      map = Command::read_map index.sample
       return unless map
 
       map.each do |s|
