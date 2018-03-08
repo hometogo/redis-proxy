@@ -9,7 +9,8 @@ module Proxy
     def initialize( log )
       super log
 
-      @map = []
+      @mutex = Mutex.new
+      @map   = []
     end
 
     ##
@@ -67,26 +68,30 @@ module Proxy
     end
 
     def populate_map
-      @log.info "#{self.class.to_s}##{__method__} rebuilding cluster map"
+      @mutex.synchronize do
+        break unless @map.empty?
 
-      index = @upstream.select { |u| u.master? }
-      return if index.empty?
+        @log.info "#{self.class.to_s}##{__method__} rebuilding cluster map"
 
-      map = Command::read_map index.sample
-      return unless map
+        index = @upstream.select { |u| u.master? }
+        break if index.empty?
 
-      map.each do |s|
-        next if s.kind_of? String
+        map = Command::read_map index.sample
+        break unless map
 
-        first = s[1][0].slice(1..-1).to_i
-        last  = s[2][0].slice(1..-1).to_i
-        ip    = s[3][1][1].empty? ? "127.0.0.1" : s[3][1][1]
-        port  = s[3][2][0].slice(1..-1)
+        map.each do |s|
+          next if s.kind_of? String
 
-        slot = Struct::Slot.new first..last, [ip, port].join( ":" )
-        @log.debug "#{self.class.to_s}##{__method__} slot #{slot.inspect}"
+          first = s[1][0].slice(1..-1).to_i
+          last  = s[2][0].slice(1..-1).to_i
+          ip    = s[3][1][1].empty? ? "127.0.0.1" : s[3][1][1]
+          port  = s[3][2][0].slice(1..-1)
 
-        @map << slot
+          slot = Struct::Slot.new first..last, [ip, port].join( ":" )
+          @log.debug "#{self.class.to_s}##{__method__} slot #{slot.inspect}"
+
+          @map << slot
+        end
       end
     end
 
