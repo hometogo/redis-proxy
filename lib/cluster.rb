@@ -1,4 +1,4 @@
-require "digest/crc16"
+require "digest/crc16_zmodem"
 
 require_relative "command"
 
@@ -62,7 +62,7 @@ module Proxy
     end
 
     def get_slot( key )
-      slot = Digest::CRC16.checksum( key ) % 16384
+      slot = Digest::CRC16ZModem.checksum( key ) % 16384
       @log.debug "#{self.class.to_s}##{__method__} result #{slot.inspect}"
       slot
     end
