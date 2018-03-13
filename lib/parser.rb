@@ -137,7 +137,7 @@ module Proxy
         key     = nil
 
         case command
-          when "SET", "SETEX"
+          when "SET", "SETEX", "DEL"
             action = :write
             key    = statement[2][1]
 
