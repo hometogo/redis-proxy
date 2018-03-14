@@ -26,6 +26,7 @@ module Proxy
       @ip      = host.split( ":" ).first
       @port    = host.split( ":" ).last
       @timeout = timeout
+      @socket  = nil
       @mutex   = Mutex.new
 
       @connected    = false
