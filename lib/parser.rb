@@ -141,7 +141,7 @@ module Proxy
             action = :write
             key    = statement[2][1]
 
-          when "GET"
+          when "GET", "EXISTS"
             action = :read
             key    = statement[2][1]
 
