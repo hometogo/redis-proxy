@@ -38,7 +38,7 @@ module Proxy
       payload = ""
 
       loop do
-        data = @client.recv 16384
+        data = @client.recv 32768
 
         if data.empty?
           @fail = true
