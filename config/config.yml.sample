@@ -1,6 +1,6 @@
 log_level: 'debug'
 
-proxy:
+server:
   -
     type: 'cluster'
     listen: '127.0.0.1:26379'

@@ -3,11 +3,6 @@ require "socket"
 require "rufus-scheduler"
 
 require_relative "../lib/config"
-require_relative "../lib/server"
-require_relative "../lib/pool"
-require_relative "../lib/standalone"
-require_relative "../lib/replication"
-require_relative "../lib/cluster"
 
 log = Logger.new STDOUT
 
@@ -19,13 +14,7 @@ $config.read "config.yml"
 
 log.level = $config.log_level
 
-pool = Proxy::Cluster.new log
-
-$config.proxy[0]["upstream"].each do |u|
-  pool.add u, 1
-end
-
-server = Proxy::Server.new log, $config[0]["listen"], pool
+server = $config.server[0]
 
 scheduler = Rufus::Scheduler.new
 
