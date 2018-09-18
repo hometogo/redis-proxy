@@ -1,2 +1,5 @@
 vendor
 .idea
+.ruby-version
+
+redis-proxy.jar

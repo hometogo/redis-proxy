@@ -1,0 +1,10 @@
+log_level: 'debug'
+
+proxy:
+  -
+    type: 'cluster'
+    listen: '127.0.0.1:26379'
+    buffer: 16384
+    timeout: 1
+    upstream:
+      - '127.0.0.1:6379'
