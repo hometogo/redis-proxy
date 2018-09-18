@@ -27,9 +27,13 @@ module Proxy
         break if statement.complete?
       end
 
-      return false if @fail || !@buffer.empty? # TODO: log?
+      if @fail || !@buffer.empty?
+        @log.error "#{self.class.to_s}##{__method__} data read error"
+        @log.debug "#{self.class.to_s}##{__method__} buffer #{@buffer.inspect}"
+        return false
+      end
 
-      statement.build # TODO: log?
+      statement.build
     end
 
     private
@@ -38,17 +42,21 @@ module Proxy
       payload = ""
 
       loop do
-        data = @client.recv 32768
+        begin
+          payload << @client.read_nonblock( 32768 )
+        rescue IO::WaitReadable
+          unless IO.select [@client], nil, nil, 0.1
+            @log.error "#{self.class.to_s}##{__method__} data read timeout"
+            @fail = true
+            break
+          end
 
-        if data.empty?
-          @fail = true
-          break
+          retry
         end
-
-        payload << data
 
         partial = payload[payload.size - 1] != "\n"
         @log.warn "#{self.class.to_s}##{__method__} partial payload, recv buffer too small?" if partial
+
         break unless partial
       end
 

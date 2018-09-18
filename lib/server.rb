@@ -31,10 +31,14 @@ module Proxy
           remote_host = client.remote_address.ip_unpack.join ":"
           queue       = Proxy::Queue.new @log, client
 
-          @log.info "connection open from #{remote_host}"
+          @log.info "connection open for client #{remote_host}"
 
           while running do
-            statement = queue.fetch
+            begin
+              statement = queue.fetch
+            rescue Exception => e
+              @log.error "#{self.class.to_s}##{__method__} unknown exception #{e.inspect} for client #{remote_host}"
+            end
 
             unless statement
               running = false
@@ -60,7 +64,7 @@ module Proxy
             client.write payload
           end
 
-          @log.info "connection close from #{remote_host}"
+          @log.info "connection close for client #{remote_host}"
 
           client.close
         end

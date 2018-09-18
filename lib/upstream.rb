@@ -78,11 +78,12 @@ module Proxy
       begin
         result = @queue.fetch
       rescue Exception => e
-        @log.error "#{self.class.to_s}##{__method__} exception #{e.inspect} for upstream #{@host}"
-        close
+        @log.error "#{self.class.to_s}##{__method__} unknown exception #{e.inspect} for upstream #{@host}"
       end
 
+      close unless result
       @mutex.unlock
+
       result
     end
 
